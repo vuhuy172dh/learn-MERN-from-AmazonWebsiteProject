@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useContext, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
@@ -13,6 +13,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import logger from 'use-reducer-logger';
 import getError from '../utils';
+import { Store } from '../Store';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -50,6 +51,13 @@ function ProductScreen() {
     fetchData();
   }, [slug]);
 
+  const { state, dispatch: cxtDispatch } = useContext(Store);
+  const addToCartHandler = () => {
+    cxtDispatch({
+      type: 'CART_ADD_ITEM',
+      payload: { ...product, quantity: 1 },
+    });
+  };
   return loading ? (
     <LoadingBox />
   ) : error ? (
@@ -111,7 +119,9 @@ function ProductScreen() {
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
                     <div>
-                      <Button variant="primary">Add to Cart</Button>
+                      <Button onClick={addToCartHandler} variant="primary">
+                        Add to Cart
+                      </Button>
                     </div>
                   </ListGroup.Item>
                 )}
